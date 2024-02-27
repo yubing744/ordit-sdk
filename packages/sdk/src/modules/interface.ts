@@ -1,15 +1,38 @@
-
 import { Transaction as BTCTransaction } from "bitcoinjs-lib"
+
+import { Inscription } from ".."
 import {
+  GetBalanceOptions,
+  GetInscriptionOptions,
+  GetInscriptionsOptions,
+  GetInscriptionUTXOOptions,
   GetSpendablesOptions,
   GetTransactionOptions,
   GetUnspentsOptions,
   GetUnspentsResponse,
   RelayOptions
 } from "../api/types"
-import { Transaction, UTXOLimited } from "../transactions/types"
+import { Transaction, UTXO, UTXOLimited } from "../transactions/types"
 
 export interface IDatasource {
+  getBalance({ address }: GetBalanceOptions): Promise<number>
+
+  getInscription({ id, decodeMetadata }: GetInscriptionOptions): Promise<Inscription>
+
+  getInscriptionUTXO({ id }: GetInscriptionUTXOOptions): Promise<UTXO>
+
+  getInscriptions({
+    creator,
+    owner,
+    mimeType,
+    mimeSubType,
+    outpoint,
+    sort,
+    limit,
+    next,
+    decodeMetadata
+  }: GetInscriptionsOptions): Promise<Inscription[]>
+
   getTransaction({
     txId,
     ordinals,
