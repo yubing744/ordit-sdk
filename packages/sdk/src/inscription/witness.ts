@@ -3,8 +3,8 @@ import * as bitcoin from "bitcoinjs-lib"
 
 import { MAXIMUM_SCRIPT_ELEMENT_SIZE } from "../constants"
 import { OrditSDKError } from "../utils/errors"
-import { InscriptionID, InscriptionFieldTag } from "./types"
-import { encodeNumber, encodeInscriptionID, encodeJSONAsCBORBuffer } from './encode'
+import { encodeInscriptionID, encodeJSONAsCBORBuffer, encodeNumber } from './encode'
+import { InscriptionFieldTag, InscriptionID } from "./types"
 
 export function buildWitnessScript({ recover = false, ...options }: WitnessScriptOptions) {
   bitcoin.initEccLib(ecc)
@@ -25,17 +25,17 @@ export function buildWitnessScript({ recover = false, ...options }: WitnessScrip
     opPush("ord"),
   ]
 
-  let fieldStackElements = new Array<number | Buffer>();
+  const fieldStackElements = new Array<number | Buffer>();
 
   // push field: pointer
   if (options.pointer) {
-    fieldStackElements.push(InscriptionFieldTag.Pointer)
+    fieldStackElements.push(...[1, InscriptionFieldTag.Pointer])
     fieldStackElements.push(encodeNumber(options.pointer))
   }
 
   // push field: parent
   if (options.parent) {
-    fieldStackElements.push(InscriptionFieldTag.Parent)
+    fieldStackElements.push(...[1, InscriptionFieldTag.Parent])
     fieldStackElements.push(encodeInscriptionID(options.parent))
   }
 
@@ -45,35 +45,35 @@ export function buildWitnessScript({ recover = false, ...options }: WitnessScrip
 
     metaChunks &&
       metaChunks.forEach((chunk) => {
-        fieldStackElements.push(InscriptionFieldTag.Metadata)
+        fieldStackElements.push(...[1, InscriptionFieldTag.Metadata])
         fieldStackElements.push(opPush(chunk))
       })
   }
 
   // push field: metaprotocol
   if (options.metaprotocol) {
-    fieldStackElements.push(InscriptionFieldTag.Metaprotocol)
+    fieldStackElements.push(...[1, InscriptionFieldTag.Metaprotocol])
     fieldStackElements.push(opPush(options.metaprotocol))
   }
 
   // push field: content_encoding
   if (options.contentEncoding) {
-    fieldStackElements.push(InscriptionFieldTag.ContentEncoding)
+    fieldStackElements.push(...[1, InscriptionFieldTag.ContentEncoding])
     fieldStackElements.push(opPush(options.contentEncoding))
   }
 
   // push field: delegate
   if (options.delegate) {
-    fieldStackElements.push(InscriptionFieldTag.Delegate)
+    fieldStackElements.push(...[1, InscriptionFieldTag.Delegate])
     fieldStackElements.push(encodeInscriptionID(options.delegate))
   }
 
   // push content
-  let contentStackElements = new Array<number | Buffer>();
+  const contentStackElements = new Array<number | Buffer>();
 
   if (options.mediaType && options.mediaContent) {
     // push field: content-type
-    fieldStackElements.push(InscriptionFieldTag.ContentType)
+    fieldStackElements.push(...[1, InscriptionFieldTag.ContentType])
     fieldStackElements.push(opPush(options.mediaType))
 
     // push content-body
