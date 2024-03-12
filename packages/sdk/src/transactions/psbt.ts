@@ -14,6 +14,7 @@ const bip32 = BIP32Factory(ecc)
 export async function createPsbt({
   pubKey,
   network,
+  datasource,
   address,
   outputs,
   satsPerByte,
@@ -27,6 +28,7 @@ export async function createPsbt({
     address,
     feeRate: satsPerByte,
     network,
+    datasource,
     publicKey: pubKey,
     outputs
   })
@@ -203,6 +205,7 @@ export type CreatePsbtOptions = {
   enableRBF?: boolean
   pubKey: string
   network: Network
+  datasource?: IDatasource
   safeMode?: OnOffUnion
 }
 
